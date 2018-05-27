@@ -1,0 +1,30 @@
+.iconHamburger {
+  display: block;
+  position: absolute;
+  right: 30px;
+  top: 25px;
+  z-index: 1;
+  width: 16px;
+  height: 22px;
+  cursor: pointer;
+
+  &:before {
+    background: #777;
+    border-radius: 2px;
+    box-shadow: 0 6px 0 0 #777, 0 12px 0 0 #777;
+    content: "";
+    display: block;
+    position: absolute;
+    width: 16px;
+    height: 2px;
+  }
+}
+
+.nav {
+  line-height: 64px;
+  border-bottom: none;
+
+  @media only screen and (max-width: 767px) {
+    border-right: none;
+  }
+}

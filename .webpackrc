@@ -1,2 +1,6 @@
 {
+  "theme": {
+    "btn-border-radius-base": "100%",
+    "btn-border-radius-sm": "100%"
+  }
 }
