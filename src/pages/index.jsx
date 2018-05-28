@@ -1,1 +1,5 @@
-export default () => <div>OpenOJ</div>
+export default () => (
+  <div>
+    OpenOJ
+  </div>
+);

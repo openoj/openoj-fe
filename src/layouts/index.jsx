@@ -1,7 +1,9 @@
 import { Layout, Row, Col } from 'antd';
 import Link from 'umi/link';
-import style from './index.less';
 import NavContainer from './Nav/NavContainer';
+import style from './index.less';
+import gStyle from '../general.less';
+
 const { Header, Content, Footer } = Layout;
 
 
@@ -20,6 +22,10 @@ export default ({ children }) => (
     <Content>
       {children}
     </Content>
-    <Footer></Footer>
+    <Footer className={gStyle.textCenter}>
+      <p>© 2018 <a href="https://github.com/openoj" target="_blank" rel="noopener noreferrer">OpenOJ</a>.
+        All Rights Reserved.
+      </p>
+    </Footer>
   </Layout>
 );
