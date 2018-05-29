@@ -16,7 +16,7 @@ const NavContainer = ({ location }) => {
     <ResponsiveNav
       activeLinkKey={location.pathname}
       navMenu={NavMenu}
-      placement="bottomLeft"
+      placement="bottom"
       session={session}
     />
   );

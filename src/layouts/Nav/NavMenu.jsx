@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Link from 'umi/link';
-import { Menu } from 'antd';
+import { Menu, Icon } from 'antd';
+import gStyle from '../../general.less';
 import style from './styles.less';
 
 // Powered by https://github.com/id-kemo/responsive-menu-ant-design
@@ -25,12 +26,13 @@ const NavMenu = ({ mobileVersion, activeLinkKey, onLinkClick, className, session
           <Menu.Item key="/user">
             <Link to="/user" onClick={onLinkClick}>User</Link>
           </Menu.Item>
-          <Menu.Item key="logout">Logout</Menu.Item>
+          <Menu.Item key="logout" onClick={onLinkClick}>Logout</Menu.Item>
         </Menu.ItemGroup> :
         <Menu.Item key="join" onClick={onLinkClick}>Join</Menu.Item>
       :
       session.logged_in ?
-        <Menu.SubMenu title={session.user.username} style={{ float: 'right' }}>
+        <Menu.SubMenu title={<span>{session.user.username}<Icon type="down" className={gStyle.iconRight}/></span>}
+                      style={{ float: 'right' }}>
           <Menu.Item key="/user">
             <Link to="/user" onClick={onLinkClick}>User</Link>
           </Menu.Item>

@@ -1,8 +1,8 @@
 import { Layout, Row, Col } from 'antd';
 import Link from 'umi/link';
 import NavContainer from './Nav/NavContainer';
-import style from './index.less';
 import gStyle from '../general.less';
+import style from './index.less';
 
 const { Header, Content, Footer } = Layout;
 
