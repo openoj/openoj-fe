@@ -14,7 +14,7 @@ export default {
     },
   },
   effects: {
-    * fetch({ payload: {_} }, { call, put }) {
+    * fetch(_, { call, put }) {
       const data = yield call(sessionService.fetch);
       yield put({
         type: 'save',
@@ -22,14 +22,14 @@ export default {
       });
     },
     * reload(action, { put }) {
-      yield put({ type: 'fetch', payload: {} });
+      yield put({ type: 'fetch' });
     },
   },
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname }) => {
         if (pathname === '/session') {
-          dispatch({ type: 'fetch', payload: {} });
+          dispatch({ type: 'fetch' });
         }
       });
     },

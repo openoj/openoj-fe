@@ -1,11 +1,12 @@
 {
   "theme": {
     "btn-border-radius-base": "100%",
-    "btn-border-radius-sm": "100%"
+    "btn-border-radius-sm": "100%",
+    "icon-url": "'/assets/fonts/iconfont'"
   },
   "proxy": {
     "/api": {
-      "target": "http://localhost/openoj_api_test/",
+      "target": "http://localhost:8901/api/",
       "changeOrigin": true,
       "pathRewrite": { "^/api" : "" }
     }

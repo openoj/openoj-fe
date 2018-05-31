@@ -33,9 +33,9 @@ class ResponsiveNav extends Component {
   }, this.props.applyViewportChange);
 
   render() {
-    const {navMenu: NavMenu, session} = this.props;
+    const NavMenu = this.props.navMenu;
     if(this.state.viewportWidth >= this.props.mobileBreakPoint) {
-      return <NavMenu activeLinkKey={this.props.activeLinkKey} session={session}/>;
+      return <NavMenu activeLinkKey={this.props.activeLinkKey}/>;
     }
 
     return (
@@ -43,7 +43,6 @@ class ResponsiveNav extends Component {
         content={<NavMenu
           onLinkClick={() => this.handleMenuVisibility(false)}
           activeLinkKey={this.props.activeLinkKey}
-          session={session}
           mobileVersion
         />
         }
