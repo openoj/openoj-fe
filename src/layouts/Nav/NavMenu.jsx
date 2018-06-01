@@ -36,9 +36,7 @@ class NavMenu extends React.Component {
             :
             !loading ?
               <Menu.Item key="join">
-                <LoginModal onShow={onLinkClick} onOk={() => {
-                  console.log('ok')
-                }}>Join</LoginModal>
+                <LoginModal onShow={onLinkClick}>Join</LoginModal>
               </Menu.Item>
               :
               <Menu.Item key="loading">
@@ -57,9 +55,7 @@ class NavMenu extends React.Component {
             :
             !loading ?
               <Menu.Item key="join" style={{ float: 'right' }}>
-                <LoginModal onOk={() => {
-                  console.log('ok')
-                }}>Join</LoginModal>
+                <LoginModal>Join</LoginModal>
               </Menu.Item>
               :
               <Menu.Item key="loading" style={{ float: 'right' }}>

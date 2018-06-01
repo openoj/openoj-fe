@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Modal, Form, Input, message } from 'antd';
+import { Modal, Form, Input, Button, message } from 'antd';
 import constants from '../../../configs/constants';
 import gStyles from '../../../general.less';
 import csshake from 'csshake';
@@ -60,14 +60,16 @@ class LoginModal extends React.Component {
   }
 
   handleOk = () => {
-    const { onOk } = this.props;
     this.props.form.validateFields((err, values) => {
       if(!err) {
-        // onOk(values);
         this.logIn(values);
-        // this.handleHideModel();
       }
     });
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    this.handleOk();
   };
 
   render() {
@@ -86,7 +88,7 @@ class LoginModal extends React.Component {
           onCancel={this.handleHideModel}
           className={`${gStyles.modalForm} ${gStyles.modalHeightSm} ${this.state.shake ? 'shake-horizontal shake-constant' : ''}`}
         >
-          <Form layout="vertical" onSubmit={this.handleOk}>
+          <Form layout="vertical" onSubmit={this.handleSubmit}>
             <Form.Item label="Email">
               {getFieldDecorator('email', {
                 rules: [{
@@ -105,6 +107,10 @@ class LoginModal extends React.Component {
 
             <Form.Item>
               <a>Forgot Password</a> or <a href="">Register</a>
+            </Form.Item>
+
+            <Form.Item className={gStyles.displayNone}>
+              <Button htmlType="submit"/>
             </Form.Item>
           </Form>
         </Modal>
