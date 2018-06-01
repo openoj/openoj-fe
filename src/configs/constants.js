@@ -1,4 +1,5 @@
 export default {
+  'siteName': 'OpenOJ',
   'requestTimeout': 5000,
   'msgDuration': {
     'success': 3,

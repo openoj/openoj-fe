@@ -4,17 +4,13 @@ import { connect } from 'dva';
 import Link from 'umi/link';
 import { Menu, Icon, Spin } from 'antd';
 import constants from '../../configs/constants';
-import gStyle from '../../general.less';
-import style from './styles.less';
+import LoginModal from './Session/LoginModal';
+import gStyles from '../../general.less';
+import styles from './styles.less';
 
 // Powered by https://github.com/id-kemo/responsive-menu-ant-design
 
 class NavMenu extends React.Component {
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({ type: 'session/fetch' });
-  }
-
   render() {
     const { mobileVersion, activeLinkKey, onLinkClick, className, loading, sessionStatus } = this.props;
     return (
@@ -39,7 +35,11 @@ class NavMenu extends React.Component {
             </Menu.ItemGroup>
             :
             !loading ?
-              <Menu.Item key="join" onClick={onLinkClick}>Join</Menu.Item>
+              <Menu.Item key="join">
+                <LoginModal onShow={onLinkClick} onOk={() => {
+                  console.log('ok')
+                }}>Join</LoginModal>
+              </Menu.Item>
               :
               <Menu.Item key="loading">
                 <Spin spinning={loading} size="small" delay={constants.indicatorDisplayDelay}/>
@@ -47,7 +47,7 @@ class NavMenu extends React.Component {
           :
           sessionStatus.logged_in ?
             <Menu.SubMenu
-              title={<span>{sessionStatus.user.username}<Icon type="down" className={gStyle.iconRight}/></span>}
+              title={<span>{sessionStatus.user.username}<Icon type="down" className={gStyles.iconRight}/></span>}
               style={{ float: 'right' }}>
               <Menu.Item key="/user">
                 <Link to="/user" onClick={onLinkClick}>User</Link>
@@ -56,7 +56,11 @@ class NavMenu extends React.Component {
             </Menu.SubMenu>
             :
             !loading ?
-              <Menu.Item key="join" style={{ float: 'right' }}>Join</Menu.Item>
+              <Menu.Item key="join" style={{ float: 'right' }}>
+                <LoginModal onOk={() => {
+                  console.log('ok')
+                }}>Join</LoginModal>
+              </Menu.Item>
               :
               <Menu.Item key="loading" style={{ float: 'right' }}>
                 <Spin spinning={loading} size="small" delay={constants.indicatorDisplayDelay}/>
@@ -76,7 +80,7 @@ NavMenu.propTypes = {
 
 NavMenu.defaultProps = {
   mobileVersion: false,
-  className: style.nav,
+  className: styles.nav,
 };
 
 
@@ -89,4 +93,3 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(NavMenu);
-

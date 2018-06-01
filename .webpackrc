@@ -1,7 +1,7 @@
 {
   "theme": {
-    "btn-border-radius-base": "100%",
-    "btn-border-radius-sm": "100%",
+    "btn-border-radius-base": "100px",
+    "btn-border-radius-sm": "100px",
     "icon-url": "'/assets/fonts/iconfont'"
   },
   "proxy": {

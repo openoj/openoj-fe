@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import throttle from 'lodash.throttle';
 import { Popover, Icon } from 'antd';
-import style from './styles.less';
+import styles from './styles.less';
 
 // Powered by https://github.com/id-kemo/responsive-menu-ant-design
 
@@ -52,7 +52,7 @@ class ResponsiveNav extends Component {
         onVisibleChange={this.handleMenuVisibility}
       >
         <Icon
-          className={style.iconHamburger}
+          className={styles.iconHamburger}
           type="menu"
         />
       </Popover>

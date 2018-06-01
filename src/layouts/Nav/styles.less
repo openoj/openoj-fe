@@ -1,14 +1,14 @@
+@import "../variables";
+
 .iconHamburger {
   display: block;
   position: absolute;
   right: 0;
   top: 0;
   padding: 25px 24px 23px;
-  //right: 30px;
-  //top: 25px;
   z-index: 1;
-  width: 64px;
-  height: 64px;
+  width: @header-height;
+  height: @header-height;
   cursor: pointer;
 
   &::before {
@@ -24,7 +24,7 @@
 }
 
 .nav {
-  line-height: 64px;
+  line-height: @header-height;
   border-bottom: none;
 
   @media only screen and (max-width: 767px) {
