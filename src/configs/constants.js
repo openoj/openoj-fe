@@ -6,4 +6,6 @@ export default {
     'error': 5,
   },
   'indicatorDisplayDelay': 1000,
+  'modalAnimationDurationFade': 200,
+  'modalAnimationDurationShake': 400,
 };

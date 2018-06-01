@@ -17,7 +17,6 @@ export default {
       return { ...state, status };
     },
     saveLogin(state, { payload: { retData: login } }) {
-      console.log({ ...state, login });
       return { ...state, login };
     },
     clearLogin(state) {

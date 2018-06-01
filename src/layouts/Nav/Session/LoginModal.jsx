@@ -3,19 +3,33 @@ import { connect } from 'dva';
 import { Modal, Form, Input, message } from 'antd';
 import constants from '../../../configs/constants';
 import gStyles from '../../../general.less';
+import csshake from 'csshake';
 
 class LoginModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       visible: false,
-      login: props.loginResult,
+      shake: false,
     };
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if(nextProps.login.result === prevState.login.result) return null;
-    return { login: nextProps.login };
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    const { dispatch, loading, loginResult } = nextProps;
+    if(this.props.loading && !loading) {
+      if(loginResult.result === 'ok') {
+        message.success(loginResult.msg, constants.msgDuration.success);
+        this.handleHideModel();
+        setTimeout(() => dispatch({
+          type: 'session/fetch',
+        }), constants.modalAnimationDurationFade);
+      }
+      else if(loginResult.result === 'failed') {
+        message.error(loginResult.msg, constants.msgDuration.error);
+        this.setState({ shake: true });
+        setTimeout(() => this.setState({ shake: false }), constants.modalAnimationDurationShake);
+      }
+    }
   }
 
   handleShowModel = e => {
@@ -70,7 +84,7 @@ class LoginModal extends React.Component {
           confirmLoading={loading}
           onOk={this.handleOk}
           onCancel={this.handleHideModel}
-          className={`${gStyles.modalForm} ${gStyles.modalHeightSm}`}
+          className={`${gStyles.modalForm} ${gStyles.modalHeightSm} ${this.state.shake ? 'shake-horizontal shake-constant' : ''}`}
         >
           <Form layout="vertical" onSubmit={this.handleOk}>
             <Form.Item label="Email">
