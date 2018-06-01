@@ -1,4 +1,5 @@
 import axios from 'axios';
+import qs from 'qs';
 import constants from '../configs/constants';
 
 function checkStatus(response) {
@@ -25,12 +26,46 @@ async function request(url, options) {
     timeout: constants.requestTimeout,
     headers: {
       'Cache-Control': 'no-cache, no-store',
-      'Content-Type': 'multipart/form-data',
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
     ...options,
   });
   checkStatus(response);
   return await response.data;
+}
+
+export function get(url, params) {
+  return request(url, {
+    params,
+  });
+}
+
+export function post(url, data) {
+  return request(url, {
+    method: 'post',
+    data: qs.stringify(data),
+  });
+}
+
+export function put(url, data) {
+  return request(url, {
+    method: 'put',
+    data: qs.stringify(data),
+  });
+}
+
+export function patch(url, data) {
+  return request(url, {
+    method: 'patch',
+    data: qs.stringify(data),
+  });
+}
+
+export function del(url, data) {
+  return request(url, {
+    method: 'delete',
+    data: qs.stringify(data),
+  });
 }
 
 export default request;

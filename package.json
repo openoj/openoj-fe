@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "scripts": {
-    "start": "umi dev",
+    "start": "BROWSER=none COMPILE_ON_DEMAND=1 HARD_SOURCE=1 umi dev",
     "build": "umi build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,7 +11,6 @@
     "type": "git",
     "url": "git+https://github.com/openoj/openoj-fe.git"
   },
-  "author": "bLue",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/openoj/openoj-fe/issues"
@@ -20,7 +19,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "lodash.throttle": "^4.1.1",
-    "umi": "^1.3.4",
+    "umi": "^1.3.5",
     "umi-plugin-dva": "^0.7.3",
     "umi-plugin-routes": "^0.1.4"
   },

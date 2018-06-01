@@ -5,7 +5,7 @@ import Link from 'umi/link';
 import NavContainer from './Nav/NavContainer';
 import constants from '../configs/constants';
 import gStyles from '../general.less';
-import styles from './styles.less';
+import styles from './index.less';
 
 
 class Index extends React.Component {
@@ -49,7 +49,7 @@ class Index extends React.Component {
 function mapStateToProps(state) {
   const { status: sessionStatus } = state.session;
   return {
-    loading: state.loading.models.session,
+    loading: state.loading.effects['session/fetch'],
     sessionStatus,
   };
 }

@@ -6,7 +6,7 @@ import { Menu, Icon, Spin } from 'antd';
 import constants from '../../configs/constants';
 import LoginModal from './Session/LoginModal';
 import gStyles from '../../general.less';
-import styles from './styles.less';
+import styles from './ResponsiveNav.less';
 
 // Powered by https://github.com/id-kemo/responsive-menu-ant-design
 
@@ -31,7 +31,7 @@ class NavMenu extends React.Component {
               <Menu.Item key="/user">
                 <Link to="/user" onClick={onLinkClick}>User</Link>
               </Menu.Item>
-              <Menu.Item key="logout" onClick={onLinkClick}>Logout</Menu.Item>
+              <Menu.Item key="logout" onClick={onLinkClick}>Log Out</Menu.Item>
             </Menu.ItemGroup>
             :
             !loading ?
@@ -52,7 +52,7 @@ class NavMenu extends React.Component {
               <Menu.Item key="/user">
                 <Link to="/user" onClick={onLinkClick}>User</Link>
               </Menu.Item>
-              <Menu.Item key="logout">Logout</Menu.Item>
+              <Menu.Item key="logout">Log Out</Menu.Item>
             </Menu.SubMenu>
             :
             !loading ?
@@ -87,7 +87,7 @@ NavMenu.defaultProps = {
 function mapStateToProps(state) {
   const { status: sessionStatus } = state.session;
   return {
-    loading: state.loading.models.session,
+    loading: state.loading.effects['session/fetch'],
     sessionStatus,
   };
 }
