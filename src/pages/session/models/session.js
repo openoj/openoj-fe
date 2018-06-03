@@ -50,9 +50,9 @@ export default {
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname }) => {
-        if(pathname === '/session') {
-          dispatch({ type: 'fetch' });
-        }
+        // if(pathname === '/session') {
+        //   dispatch({ type: 'fetch' });
+        // }
       });
     },
   },

@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Modal, Form, Input, Button, message } from 'antd';
+import classNames from 'classnames';
 import setStatePromise from '../../../utils/setStatePromise';
 import constants from '../../../configs/constants';
 import styles from './LoginModal.less';
@@ -16,7 +17,8 @@ class LoginModal extends React.Component {
       shakeTimer: null,
       firstShow: true,
       contentVisible: true,
-      tab: 'login'
+      tab: 'login',
+      confirmDirty: false,
     };
     this.setStatePromise = setStatePromise.bind(this);
   }
@@ -27,11 +29,11 @@ class LoginModal extends React.Component {
       body: () => {
         const { getFieldDecorator } = this.props.form;
         return (
-          <Form layout="vertical" onSubmit={this.handleSubmit}>
+          <Form layout="vertical" hideRequiredMark={true} onSubmit={this.handleSubmit}>
             <Form.Item label="Email">
               {getFieldDecorator('email', {
                 rules: [{
-                  type: 'email', message: 'The input is not valid email',
+                  type: 'email', message: 'Invalid email',
                 }, {
                   required: true, message: 'Please input email',
                 }],
@@ -66,33 +68,51 @@ class LoginModal extends React.Component {
       body: () => {
         const { getFieldDecorator } = this.props.form;
         return (
-          <Form layout="vertical" onSubmit={this.handleSubmit}>
+          <Form layout="vertical" hideRequiredMark={true} onSubmit={this.handleSubmit}>
             <Form.Item label="Email">
               {getFieldDecorator('email', {
                 rules: [{
-                  type: 'email', message: 'The input is not valid email',
+                  type: 'email', message: 'Invalid email',
                 }, {
                   required: true, message: 'Please input email',
                 }],
               })(<Input/>)}
             </Form.Item>
 
-            <Form.Item label="Code">
-              {getFieldDecorator('code', {
-                rules: [{
-                  required: true, message: 'Please input code',
-                }],
-              })(<Input/>)}
+            <Form.Item label="Verification Code">
+              {getFieldDecorator('verification_code', {
+                rules: [{ required: true, message: 'Please input verification code' }],
+              })(
+                <Input.Search enterButton="Get code" className={styles.inputButton}/>
+              )}
             </Form.Item>
 
             <Form.Item label="Password">
               {getFieldDecorator('password', {
-                rules: [{ required: true, message: 'Please input password' }],
-              })(<Input type="password"/>)}
+                rules: [{
+                  required: true, message: 'Please input password',
+                }, {
+                  validator: this.validateToNextPassword,
+                }],
+              })(
+                <Input type="password"/>
+              )}
+            </Form.Item>
+
+            <Form.Item label="Confirm Password">
+              {getFieldDecorator('confirm', {
+                rules: [{
+                  required: true, message: 'Please confirm password',
+                }, {
+                  validator: this.compareToFirstPassword,
+                }],
+              })(
+                <Input type="password" onBlur={this.handleConfirmBlur}/>
+              )}
             </Form.Item>
 
             <Form.Item>
-              Go back to <a onClick={e => {
+              Back to <a onClick={e => {
               this.switchTab(e, 'login')
             }}>Login</a>
             </Form.Item>
@@ -156,17 +176,42 @@ class LoginModal extends React.Component {
 
   switchTab = async(e, selectedTab) => {
     e.preventDefault();
-    let modalHeader = document.querySelector(`.${styles.modalTransition} .ant-modal-header`);
-    let modalBody = document.querySelector(`.${styles.modalTransition} .ant-modal-body`);
+    const form = this.props.form;
+    const modalHeader = document.querySelector(`.${styles.modalTransition} .ant-modal-header`);
+    const modalBody = document.querySelector(`.${styles.modalTransition} .ant-modal-body`);
     if(this.state.firstShow) {
       this.funTransitionHeight(modalBody);
       this.setState({ firstShow: false });
     }
     await this.setStatePromise({ contentVisible: false });
     await this.setStatePromise({ tab: selectedTab });
+    form.resetFields(['password', 'verification_code']);
     this.funTransitionOpacity(modalHeader);
     this.funTransitionHeight(modalBody);
     setTimeout(() => this.setState({ contentVisible: true }), constants.modalAnimationDurationSwitch / 2);
+  };
+
+  handleConfirmBlur = e => {
+    const value = e.target.value;
+    this.setState({ confirmDirty: this.state.confirmDirty || !!value });
+  };
+
+  compareToFirstPassword = (rule, value, callback) => {
+    const form = this.props.form;
+    if(value && value !== form.getFieldValue('password')) {
+      callback('Two passwords are inconsistent');
+    }
+    else {
+      callback();
+    }
+  };
+
+  validateToNextPassword = (rule, value, callback) => {
+    const form = this.props.form;
+    if(value && this.state.confirmDirty) {
+      form.validateFields(['confirm'], { force: true });
+    }
+    callback();
   };
 
   handleShowModel = e => {
@@ -207,6 +252,15 @@ class LoginModal extends React.Component {
 
   render() {
     const { children, loading } = this.props;
+    const classes = classNames(
+      gStyles.modalForm,
+      gStyles.modalHeightSm,
+      styles.modalTransition,
+      {
+        [styles.modalTransitionHide]: !this.state.contentVisible,
+        'shake-horizontal shake-constant': this.state.shake,
+      }
+    );
 
     return (
       <>
@@ -218,7 +272,7 @@ class LoginModal extends React.Component {
           confirmLoading={loading}
           onOk={this.handleOk}
           onCancel={this.handleHideModel}
-          className={`${gStyles.modalForm} ${gStyles.modalHeightSm} ${styles.modalTransition} ${this.state.contentVisible ? '' : styles.modalTransitionHide} ${this.state.shake ? 'shake-horizontal shake-constant' : ''}`}
+          className={classes}
         >
           {this.tabs[this.state.tab].body()}
         </Modal>

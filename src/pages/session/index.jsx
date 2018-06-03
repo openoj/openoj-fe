@@ -1,3 +1,3 @@
-import Session from './components/Session/Session';
+import Session from './components/session';
 
-export default () => (<Session/>);
+export default ({location}) => (<Session location={location}/>);

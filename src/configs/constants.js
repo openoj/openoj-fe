@@ -8,5 +8,5 @@ export default {
   'indicatorDisplayDelay': 1000,
   'modalAnimationDurationFade': 200,
   'modalAnimationDurationShake': 400,
-  'modalAnimationDurationSwitch': 400,
+  'modalAnimationDurationSwitch': 600,
 };

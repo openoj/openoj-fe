@@ -1,8 +1,9 @@
 @import "~antd/lib/style/themes/default";
+@import "~antd/lib/button/style/mixin";
 
 .modalTransition {
   :global(.ant-modal-header), :global(.ant-modal-body) {
-    transition: .4s @ease-in-out;
+    transition: .6s @ease-in-out;
     opacity: 1;
   }
 }
@@ -11,4 +12,10 @@
   :global(.ant-modal-header), :global(.ant-modal-body) {
     opacity: 0;
   }
+}
+
+.inputButton :global(.ant-input-search-button) {
+  border-radius: @border-radius-base;
+
+  .btn-default;
 }
