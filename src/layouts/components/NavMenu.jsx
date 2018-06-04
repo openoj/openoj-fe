@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import Link from 'umi/link';
-import { Menu, Icon, Spin } from 'antd';
+import { Menu, Icon, Spin, message } from 'antd';
 import constants from '../../configs/constants';
 import LoginModal from './Session/LoginModal';
 import gStyles from '../../general.less';
@@ -11,6 +11,26 @@ import styles from './ResponsiveNav.less';
 // Powered by https://github.com/id-kemo/responsive-menu-ant-design
 
 class NavMenu extends React.Component {
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    const { dispatch, loading, logoutResult } = nextProps;
+    if(this.props.loading && !loading) {
+      if(logoutResult.result === 'succeeded') {
+        message.success(logoutResult.msg, constants.msgDuration.success);
+        dispatch({
+          type: 'session/clear',
+          payload: 'logout',
+        });
+      }
+    }
+  }
+
+  logOut = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'session/logout',
+    });
+  };
+
   render() {
     const { mobileVersion, activeLinkKey, onLinkClick, className, loading, sessionStatus } = this.props;
     return (
@@ -31,7 +51,7 @@ class NavMenu extends React.Component {
               <Menu.Item key="/user">
                 <Link to="/user" onClick={onLinkClick}>User</Link>
               </Menu.Item>
-              <Menu.Item key="logout" onClick={onLinkClick}>Log Out</Menu.Item>
+              <Menu.Item key="logout" onClick={() => {onLinkClick(); this.logOut();}}>Log Out</Menu.Item>
             </Menu.ItemGroup>
             :
             !loading ?
@@ -48,9 +68,9 @@ class NavMenu extends React.Component {
               title={<span>{sessionStatus.user.username}<Icon type="down" className={gStyles.iconRight}/></span>}
               style={{ float: 'right' }}>
               <Menu.Item key="/user">
-                <Link to="/user" onClick={onLinkClick}>User</Link>
+                <Link to="/user">User</Link>
               </Menu.Item>
-              <Menu.Item key="logout">Log Out</Menu.Item>
+              <Menu.Item key="logout" onClick={this.logOut}>Log Out</Menu.Item>
             </Menu.SubMenu>
             :
             !loading ?
@@ -81,10 +101,11 @@ NavMenu.defaultProps = {
 
 
 function mapStateToProps(state) {
-  const { status: sessionStatus } = state.session;
+  const { status: sessionStatus, logout: logoutResult } = state.session;
   return {
-    loading: state.loading.effects['session/fetch'],
+    loading: !!state.loading.effects['session/fetch'] || !!state.loading.effects['session/logout'],
     sessionStatus,
+    logoutResult,
   };
 }
 

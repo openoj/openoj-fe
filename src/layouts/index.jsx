@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'dva';
 import { Layout, Row, Col } from 'antd';
 import Link from 'umi/link';
-import NavContainer from './Nav/NavContainer';
+import NavContainer from './components/NavContainer';
+import pages from '../configs/pages';
 import constants from '../configs/constants';
 import gStyles from '../general.less';
 import styles from './index.less';
@@ -15,12 +16,17 @@ class Index extends React.Component {
   }
 
   componentDidMount() {
-    this.fetchSession();
+    if(this.props.location.pathname !== pages.session.oauth) {
+      this.fetchSession();
+    }
   }
 
   render() {
-    const { children } = this.props;
+    const { children, location } = this.props;
     const { Header, Content, Footer } = Layout;
+    if(location.pathname === pages.session.oauth) {
+      return <div>{children}</div>
+    }
     return (
       <Layout>
         <Header>

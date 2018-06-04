@@ -31,12 +31,14 @@ class LoginModal extends React.Component {
         return (
           <Form layout="vertical" hideRequiredMark={true} onSubmit={this.handleSubmit}>
             <Form.Item label="Email">
-              {getFieldDecorator('email', {
-                rules: [{
-                  type: 'email', message: 'Invalid email',
-                }, {
-                  required: true, message: 'Please input email',
-                }],
+              {getFieldDecorator('username', {
+                rules: [
+                  {
+                    type: 'email', message: 'Invalid email',
+                  },
+                  {
+                    required: true, message: 'Please input email',
+                  }],
               })(<Input/>)}
             </Form.Item>
 
@@ -129,7 +131,7 @@ class LoginModal extends React.Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     const { dispatch, loading, loginResult } = nextProps;
     if(this.props.loading && !loading) {
-      if(loginResult.result === 'ok') {
+      if(loginResult.result === 'succeeded') {
         message.success(loginResult.msg, constants.msgDuration.success);
         this.handleHideModel();
         setTimeout(() => dispatch({
@@ -229,13 +231,13 @@ class LoginModal extends React.Component {
     this.setState({ visible: false });
   };
 
-  logIn(data) {
+  logIn = data => {
     const { dispatch } = this.props;
     dispatch({
       type: 'session/login',
       payload: data,
     });
-  }
+  };
 
   handleOk = () => {
     this.props.form.validateFields((err, values) => {
