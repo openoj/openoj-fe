@@ -4,11 +4,11 @@ import { Modal, Form, Input, Button, message } from 'antd';
 import classNames from 'classnames';
 import setStatePromise from '../../../utils/setStatePromise';
 import constants from '../../../configs/constants';
-import styles from './LoginModal.less';
+import styles from './JoinModal.less';
 import gStyles from '../../../general.less';
 import 'csshake';
 
-class LoginModal extends React.Component {
+class JoinModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -31,10 +31,10 @@ class LoginModal extends React.Component {
         return (
           <Form layout="vertical" hideRequiredMark={true} onSubmit={this.handleSubmit}>
             <Form.Item label="Email">
-              {getFieldDecorator('username', {
+              {getFieldDecorator('email', {
                 rules: [
                   {
-                    type: 'email', message: 'Invalid email',
+                    type: 'email', message: 'Please input a valid email',
                   },
                   {
                     required: true, message: 'Please input email',
@@ -49,9 +49,8 @@ class LoginModal extends React.Component {
             </Form.Item>
 
             <Form.Item>
-              <a onClick={e => {
-                this.switchTab(e, 'forgotPassword')
-              }}>Forgot Password</a> or <a href="">Register</a>
+              <a onClick={e => this.switchTab(e, 'forgotPassword')}>Forgot Password</a> or <a
+              onClick={e => this.switchTab(e, 'register')}>Register</a>
             </Form.Item>
 
             <Form.Item className={gStyles.displayNone}>
@@ -63,7 +62,72 @@ class LoginModal extends React.Component {
     },
     register: {
       title: 'Register',
-      body: '',
+      body: () => {
+        const { getFieldDecorator } = this.props.form;
+        return (
+          <Form layout="vertical" hideRequiredMark={true} onSubmit={this.handleSubmit}>
+            <Form.Item label="Email">
+              {getFieldDecorator('email', {
+                rules: [{
+                  type: 'email', message: 'Please input a valid email',
+                }, {
+                  required: true, message: 'Please input email',
+                }],
+              })(<Input/>)}
+            </Form.Item>
+
+            <Form.Item label="Verification Code">
+              {getFieldDecorator('verification_code', {
+                rules: [{ required: true, message: 'Please input verification code' }],
+              })(
+                <Input.Search enterButton="Get code" className={styles.inputButton}/>
+              )}
+            </Form.Item>
+
+            <Form.Item label="Password">
+              {getFieldDecorator('password', {
+                rules: [{
+                  required: true, message: 'Please input password',
+                }, {
+                  validator: this.validateToNextPassword,
+                }],
+              })(
+                <Input type="password"/>
+              )}
+            </Form.Item>
+
+            <Form.Item label="Confirm Password">
+              {getFieldDecorator('confirm', {
+                rules: [{
+                  required: true, message: 'Please confirm password',
+                }, {
+                  validator: this.compareToFirstPassword,
+                }],
+              })(
+                <Input type="password" onBlur={this.handleConfirmBlur}/>
+              )}
+            </Form.Item>
+
+            <Form.Item label="Username">
+              {getFieldDecorator('username', {
+                rules: [{
+                  required: true, message: 'Please input username',
+                }],
+              })(
+                <Input/>
+              )}
+            </Form.Item>
+
+            <Form.Item>
+              Already have an account? <a onClick={e => this.switchTab(e, 'login')}>Login</a>
+            </Form.Item>
+
+            <Form.Item className={gStyles.displayNone}>
+              <Button htmlType="submit"/>
+            </Form.Item>
+          </Form>
+        )
+      },
     },
     forgotPassword: {
       title: 'Forgot Password',
@@ -74,7 +138,7 @@ class LoginModal extends React.Component {
             <Form.Item label="Email">
               {getFieldDecorator('email', {
                 rules: [{
-                  type: 'email', message: 'Invalid email',
+                  type: 'email', message: 'Please input a valid email',
                 }, {
                   required: true, message: 'Please input email',
                 }],
@@ -114,9 +178,7 @@ class LoginModal extends React.Component {
             </Form.Item>
 
             <Form.Item>
-              Back to <a onClick={e => {
-              this.switchTab(e, 'login')
-            }}>Login</a>
+              Back to <a onClick={e => this.switchTab(e, 'login')}>Login</a>
             </Form.Item>
 
             <Form.Item className={gStyles.displayNone}>
@@ -176,7 +238,7 @@ class LoginModal extends React.Component {
     element.style.transitionProperty = 'opacity';
   };
 
-  switchTab = async(e, selectedTab) => {
+  switchTab = async (e, selectedTab) => {
     e.preventDefault();
     const form = this.props.form;
     const modalHeader = document.querySelector(`.${styles.modalTransition} .ant-modal-header`);
@@ -187,7 +249,7 @@ class LoginModal extends React.Component {
     }
     await this.setStatePromise({ contentVisible: false });
     await this.setStatePromise({ tab: selectedTab });
-    form.resetFields(['password', 'verification_code']);
+    form.resetFields(['verification_code', 'password', 'confirm', 'username']);
     this.funTransitionOpacity(modalHeader);
     this.funTransitionHeight(modalBody);
     setTimeout(() => this.setState({ contentVisible: true }), constants.modalAnimationDurationSwitch / 2);
@@ -291,4 +353,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(Form.create()(LoginModal));
+export default connect(mapStateToProps)(Form.create()(JoinModal));

@@ -46,7 +46,7 @@ export async function getAccessToken(csrf) {
   if(ok) {
     return {
       result: 'succeeded',
-      msg: 'Welcome',
+      msg: 'Welcome back',
     };
   }
   else {

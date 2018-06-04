@@ -4,7 +4,7 @@ import { connect } from 'dva';
 import Link from 'umi/link';
 import { Menu, Icon, Spin, message } from 'antd';
 import constants from '../../configs/constants';
-import LoginModal from './Session/LoginModal';
+import LoginModal from './Session/JoinModal';
 import gStyles from '../../general.less';
 import styles from './ResponsiveNav.less';
 
@@ -17,7 +17,7 @@ class NavMenu extends React.Component {
       if(logoutResult.result === 'succeeded') {
         message.success(logoutResult.msg, constants.msgDuration.success);
         dispatch({
-          type: 'session/clear',
+          type: 'session/reset',
           payload: 'logout',
         });
       }
@@ -46,40 +46,43 @@ class NavMenu extends React.Component {
           <Link to="/statuses" onClick={onLinkClick}>Statuses</Link>
         </Menu.Item>
         {mobileVersion ?
-          sessionStatus.logged_in ?
-            <Menu.ItemGroup title={sessionStatus.user.username}>
-              <Menu.Item key="/user">
-                <Link to="/user" onClick={onLinkClick}>User</Link>
-              </Menu.Item>
-              <Menu.Item key="logout" onClick={() => {onLinkClick(); this.logOut();}}>Log Out</Menu.Item>
-            </Menu.ItemGroup>
+          loading ?
+            <Menu.Item key="loading">
+              <Spin spinning={loading} size="small" delay={constants.indicatorDisplayDelay}/>
+            </Menu.Item>
             :
-            !loading ?
+            sessionStatus.logged_in ?
+              <Menu.ItemGroup title={sessionStatus.user.username}>
+                <Menu.Item key="/user">
+                  <Link to="/user" onClick={onLinkClick}>User</Link>
+                </Menu.Item>
+                <Menu.Item key="logout" onClick={() => {
+                  onLinkClick();
+                  this.logOut();
+                }}>Log Out</Menu.Item>
+              </Menu.ItemGroup>
+              :
               <Menu.Item key="join">
                 <LoginModal onShow={onLinkClick}>Join</LoginModal>
               </Menu.Item>
-              :
-              <Menu.Item key="loading">
-                <Spin spinning={loading} size="small" delay={constants.indicatorDisplayDelay}/>
-              </Menu.Item>
           :
-          sessionStatus.logged_in ?
-            <Menu.SubMenu
-              title={<span>{sessionStatus.user.username}<Icon type="down" className={gStyles.iconRight}/></span>}
-              style={{ float: 'right' }}>
-              <Menu.Item key="/user">
-                <Link to="/user">User</Link>
-              </Menu.Item>
-              <Menu.Item key="logout" onClick={this.logOut}>Log Out</Menu.Item>
-            </Menu.SubMenu>
+          loading ?
+            <Menu.Item key="loading" style={{ float: 'right' }}>
+              <Spin spinning={loading} size="small" delay={constants.indicatorDisplayDelay}/>
+            </Menu.Item>
             :
-            !loading ?
+            sessionStatus.logged_in ?
+              <Menu.SubMenu
+                title={<span>{sessionStatus.user.username}<Icon type="down" className={gStyles.iconRight}/></span>}
+                style={{ float: 'right' }}>
+                <Menu.Item key="/user">
+                  <Link to="/user">User</Link>
+                </Menu.Item>
+                <Menu.Item key="logout" onClick={this.logOut}>Log Out</Menu.Item>
+              </Menu.SubMenu>
+              :
               <Menu.Item key="join" style={{ float: 'right' }}>
                 <LoginModal>Join</LoginModal>
-              </Menu.Item>
-              :
-              <Menu.Item key="loading" style={{ float: 'right' }}>
-                <Spin spinning={loading} size="small" delay={constants.indicatorDisplayDelay}/>
               </Menu.Item>
         }
       </Menu>

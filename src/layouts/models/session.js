@@ -5,6 +5,20 @@ let initialState = {
     logged_in: false,
     user: {},
   },
+  verificationCode: {
+    result: null,
+    code: '',
+  },
+  register: {
+    result: null,
+    msg: '',
+    errors: {},
+  },
+  forgotPassword: {
+    result: null,
+    msg: '',
+    errors: {},
+  },
   login: {
     result: null,
     msg: '',
@@ -19,27 +33,23 @@ export default {
   namespace: 'session',
   state: initialState,
   reducers: {
-    clear(state, { payload: item }) {
+    save(state, { payload: { item, ret } }) {
+      let newState = { ...state };
+      newState[item] = { ...ret };
+      return newState;
+    },
+    reset(state, { payload: item }) {
       let newState = { ...state };
       newState[item] = { ...initialState[item] };
       return newState;
-    },
-    saveStatus(state, { payload: { ret: status } }) {
-      return { ...state, status };
-    },
-    saveLogin(state, { payload: { ret: login } }) {
-      return { ...state, login };
-    },
-    saveLogout(state, { payload: { ret: logout } }) {
-      return { ...state, logout };
     },
   },
   effects: {
     * fetch(action, { call, put }) {
       const ret = yield call(sessionService.fetch);
       yield put({
-        type: 'saveStatus',
-        payload: { ret },
+        type: 'save',
+        payload: { item: 'status', ret },
       });
     },
     * reload(action, { put }) {
@@ -47,23 +57,23 @@ export default {
     },
     * login({ payload: data }, { call, put }) {
       let ret = yield call(sessionService.login, data);
-      if(ret.csrfmiddlewaretoken) {
+      if(ret.result === 'succeeded') {
         ret = yield call(sessionService.getAccessToken, ret.csrfmiddlewaretoken);
       }
       yield put({
-        type: 'saveLogin',
-        payload: { ret },
+        type: 'save',
+        payload: { item: 'login', ret },
       });
     },
     * logout(action, { call, put }) {
       let ret = yield call(sessionService.logout);
       if(ret.result === 'succeeded') {
         yield put({
-          type: 'saveLogout',
-          payload: { ret },
+          type: 'save',
+          payload: { item: 'logout', ret },
         });
         yield put({
-          type: 'clear',
+          type: 'reset',
           payload: 'status',
         });
       }
