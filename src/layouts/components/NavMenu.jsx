@@ -4,7 +4,7 @@ import { connect } from 'dva';
 import Link from 'umi/link';
 import { Menu, Icon, Spin, message } from 'antd';
 import constants from '../../configs/constants';
-import LoginModal from './Session/JoinModal';
+import JoinModal from './Session/JoinModal';
 import gStyles from '../../general.less';
 import styles from './ResponsiveNav.less';
 
@@ -63,7 +63,7 @@ class NavMenu extends React.Component {
               </Menu.ItemGroup>
               :
               <Menu.Item key="join">
-                <LoginModal onShow={onLinkClick}>Join</LoginModal>
+                <JoinModal onShow={onLinkClick}>Join</JoinModal>
               </Menu.Item>
           :
           loading ?
@@ -82,7 +82,7 @@ class NavMenu extends React.Component {
               </Menu.SubMenu>
               :
               <Menu.Item key="join" style={{ float: 'right' }}>
-                <LoginModal>Join</LoginModal>
+                <JoinModal>Join</JoinModal>
               </Menu.Item>
         }
       </Menu>
