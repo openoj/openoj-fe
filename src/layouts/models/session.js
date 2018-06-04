@@ -22,7 +22,6 @@ export default {
     clear(state, { payload: item }) {
       let newState = { ...state };
       newState[item] = { ...initialState[item] };
-      console.log(newState);
       return newState;
     },
     saveStatus(state, { payload: { ret: status } }) {
