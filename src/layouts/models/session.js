@@ -5,28 +5,6 @@ let initialState = {
     logged_in: false,
     user: {},
   },
-  verificationCode: {
-    result: null,
-    code: '',
-  },
-  register: {
-    result: null,
-    msg: '',
-    errors: {},
-  },
-  forgotPassword: {
-    result: null,
-    msg: '',
-    errors: {},
-  },
-  login: {
-    result: null,
-    msg: '',
-  },
-  logout: {
-    result: null,
-    msg: '',
-  }
 };
 
 export default {
@@ -51,32 +29,33 @@ export default {
         type: 'save',
         payload: { item: 'status', ret },
       });
+      return ret;
     },
     * reload(action, { put }) {
       yield put({ type: 'fetch' });
     },
     * login({ payload: data }, { call, put }) {
       let ret = yield call(sessionService.login, data);
-      if(ret.result === 'succeeded') {
+      if(ret.result === 'success') {
         ret = yield call(sessionService.getAccessToken, ret.csrfmiddlewaretoken);
       }
-      yield put({
-        type: 'save',
-        payload: { item: 'login', ret },
-      });
+      return ret;
     },
     * logout(action, { call, put }) {
       let ret = yield call(sessionService.logout);
-      if(ret.result === 'succeeded') {
-        yield put({
-          type: 'save',
-          payload: { item: 'logout', ret },
-        });
+      if(ret.result === 'success') {
         yield put({
           type: 'reset',
           payload: 'status',
         });
       }
+      return ret;
+    },
+    * getRegisterVerificationCode({ payload: data }, { call, put }) {
+      return yield call(sessionService.getRegisterVerificationCode, data);
+    },
+    * register({ payload: data }, { call, put }) {
+      return yield call(sessionService.register, data);
     },
   },
   subscriptions: {

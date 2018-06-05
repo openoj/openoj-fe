@@ -1,7 +1,7 @@
 export default {
   session: {
     status: '/api/session',
-    verificationCode: '/api/verification_code',
+    registerVerificationCode: '/api/register_email',
     register: '/api/register',
     forgotPassword: '/api/forgot_password',
     login: '/api/login',

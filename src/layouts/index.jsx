@@ -5,7 +5,6 @@ import Link from 'umi/link';
 import NavContainer from './components/NavContainer';
 import pages from '../configs/pages';
 import constants from '../configs/constants';
-import gStyles from '../general.less';
 import styles from './index.less';
 
 
@@ -42,22 +41,13 @@ class Index extends React.Component {
         <Content>
           {children}
         </Content>
-        <Footer className={gStyles.textCenter}>
-          <p>© 2018 <a href="https://github.com/openoj" target="_blank" rel="noopener noreferrer">OpenOJ</a>.
-            All Rights Reserved.
-          </p>
+        <Footer className={styles.footer}>
+          <p>© 2018 {constants.siteName}. All Rights Reserved.</p>
+          <p>Based on <a href="https://github.com/openoj" target="_blank" rel="noopener noreferrer">OpenOJ</a></p>
         </Footer>
       </Layout>
     );
   }
 }
 
-function mapStateToProps(state) {
-  const { status: sessionStatus } = state.session;
-  return {
-    loading: state.loading.effects['session/fetch'],
-    sessionStatus,
-  };
-}
-
-export default connect(mapStateToProps)(Index);
+export default connect()(Index);

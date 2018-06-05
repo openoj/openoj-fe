@@ -14,8 +14,29 @@
   }
 }
 
-.inputButton :global(.ant-input-search-button) {
-  border-radius: @border-radius-base;
+.inputButton {
+  :global(.ant-input-search-button) {
+    border-radius: @border-radius-base;
 
-  .btn-default;
+    .btn-default;
+  }
+}
+
+.inputButtonDisabled {
+  .inputButton;
+
+  :global(.ant-input-search-button) {
+    &,
+    &:hover,
+    &:focus,
+    &:active,
+    &.active {
+      .button-color(@btn-disable-color; @btn-disable-bg; @btn-disable-border);
+    }
+    cursor: not-allowed;
+    > * {
+      pointer-events: none;
+    }
+  }
+
 }

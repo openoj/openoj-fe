@@ -45,13 +45,13 @@ export async function getAccessToken(csrf) {
 
   if(ok) {
     return {
-      result: 'succeeded',
+      result: 'success',
       msg: 'Welcome back',
     };
   }
   else {
     return {
-      result: 'failed',
+      result: 'error',
       msg: 'Authorization failed. Please try again',
     }
   }
@@ -59,4 +59,13 @@ export async function getAccessToken(csrf) {
 
 export function logout() {
   return get(apis.session.logout);
+}
+
+
+export function getRegisterVerificationCode(data) {
+  return post(apis.session.registerVerificationCode, data);
+}
+
+export function register(data) {
+  return post(apis.session.register, data);
 }

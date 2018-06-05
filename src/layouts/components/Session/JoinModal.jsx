@@ -1,8 +1,10 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Modal, Form, Input, Button, message } from 'antd';
+import { Modal, Form, Input, Button } from 'antd';
 import classNames from 'classnames';
 import setStatePromise from '../../../utils/setStatePromise';
+import displayMessage from '../../../utils/displayMessage';
+import setFormErrors from '../../../utils/setFormErrors';
 import constants from '../../../configs/constants';
 import styles from './JoinModal.less';
 import gStyles from '../../../general.less';
@@ -19,6 +21,8 @@ class JoinModal extends React.Component {
       contentVisible: true,
       tab: 'login',
       confirmDirty: false,
+      verificationCodeRetry: null,
+      verificationCodeRetryTimer: null,
     };
     this.setStatePromise = setStatePromise.bind(this);
   }
@@ -30,15 +34,11 @@ class JoinModal extends React.Component {
         const { getFieldDecorator } = this.props.form;
         return (
           <Form layout="vertical" hideRequiredMark={true} onSubmit={this.handleSubmit}>
-            <Form.Item label="Email">
-              {getFieldDecorator('email', {
-                rules: [
-                  {
-                    type: 'email', message: 'Please input a valid email',
-                  },
-                  {
-                    required: true, message: 'Please input email',
-                  }],
+            <Form.Item label="Email or Username">
+              {getFieldDecorator('login_name', {
+                rules: [{
+                  required: true, message: 'Please input email or username',
+                }],
               })(<Input/>)}
             </Form.Item>
 
@@ -64,6 +64,7 @@ class JoinModal extends React.Component {
       title: 'Register',
       body: () => {
         const { getFieldDecorator } = this.props.form;
+        const verificationCodeRetry = this.state.verificationCodeRetry;
         return (
           <Form layout="vertical" hideRequiredMark={true} onSubmit={this.handleSubmit}>
             <Form.Item label="Email">
@@ -80,7 +81,11 @@ class JoinModal extends React.Component {
               {getFieldDecorator('verification_code', {
                 rules: [{ required: true, message: 'Please input verification code' }],
               })(
-                <Input.Search enterButton="Get code" className={styles.inputButton}/>
+                <Input.Search
+                  enterButton={verificationCodeRetry ? `Resend code (${verificationCodeRetry}s)` : 'Send code'}
+                  className={!!verificationCodeRetry ? styles.inputButtonDisabled : styles.inputButton}
+                  onSearch={this.getRegisterVerificationCode}
+                />
               )}
             </Form.Item>
 
@@ -133,6 +138,7 @@ class JoinModal extends React.Component {
       title: 'Forgot Password',
       body: () => {
         const { getFieldDecorator } = this.props.form;
+        const verificationCodeRetry = this.state.verificationCodeRetry;
         return (
           <Form layout="vertical" hideRequiredMark={true} onSubmit={this.handleSubmit}>
             <Form.Item label="Email">
@@ -149,7 +155,10 @@ class JoinModal extends React.Component {
               {getFieldDecorator('verification_code', {
                 rules: [{ required: true, message: 'Please input verification code' }],
               })(
-                <Input.Search enterButton="Get code" className={styles.inputButton}/>
+                <Input.Search
+                  enterButton={verificationCodeRetry ? `Resend code (${verificationCodeRetry}s)` : 'Send code'}
+                  className={!!verificationCodeRetry ? styles.inputButtonDisabled : styles.inputButton}
+                />
               )}
             </Form.Item>
 
@@ -190,31 +199,10 @@ class JoinModal extends React.Component {
     },
   };
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    const { dispatch, loading, loginResult } = nextProps;
-    if(this.props.loading && !loading) {
-      if(loginResult.result === 'succeeded') {
-        message.success(loginResult.msg, constants.msgDuration.success);
-        this.handleHideModel();
-        setTimeout(() => dispatch({
-          type: 'session/fetch',
-        }), constants.modalAnimationDurationFade);
-      }
-      else if(loginResult.result === 'failed') {
-        message.error(loginResult.msg, constants.msgDuration.error);
-        if(this.state.shakeTimer) {
-          clearTimeout(this.state.shakeTimer);
-        }
-        this.setState({ shake: true });
-        this.setState({ shakeTimer: setTimeout(() => this.setState({ shake: false }), constants.modalAnimationDurationShake) });
-      }
-    }
-  }
-
   // funTransitionHeight powered by zhangxinxu
 
   funTransitionHeight(element) {
-    if(typeof window.getComputedStyle === "undefined") {
+    if(typeof window.getComputedStyle === 'undefined') {
       return;
     }
     let height = window.getComputedStyle(element).height;
@@ -229,7 +217,7 @@ class JoinModal extends React.Component {
   };
 
   funTransitionOpacity(element) {
-    if(typeof window.getComputedStyle === "undefined") {
+    if(typeof window.getComputedStyle === 'undefined') {
       return;
     }
     element.style.transitionProperty = 'none';
@@ -238,7 +226,7 @@ class JoinModal extends React.Component {
     element.style.transitionProperty = 'opacity';
   };
 
-  switchTab = async (e, selectedTab) => {
+  switchTab = async(e, selectedTab) => {
     e.preventDefault();
     const form = this.props.form;
     const modalHeader = document.querySelector(`.${styles.modalTransition} .ant-modal-header`);
@@ -249,7 +237,7 @@ class JoinModal extends React.Component {
     }
     await this.setStatePromise({ contentVisible: false });
     await this.setStatePromise({ tab: selectedTab });
-    form.resetFields(['verification_code', 'password', 'confirm', 'username']);
+    form.resetFields();
     this.funTransitionOpacity(modalHeader);
     this.funTransitionHeight(modalBody);
     setTimeout(() => this.setState({ contentVisible: true }), constants.modalAnimationDurationSwitch / 2);
@@ -278,6 +266,88 @@ class JoinModal extends React.Component {
     callback();
   };
 
+  getRegisterVerificationCode = () => {
+    if(this.state.verificationCodeRetry) {
+      return;
+    }
+    const { form, dispatch } = this.props;
+    form.validateFields(['email']);
+    if(!form.getFieldError('email')) {
+      dispatch({
+        type: 'session/getRegisterVerificationCode',
+        payload: form.getFieldsValue(['email']),
+      }).then(ret => {
+        displayMessage(ret);
+        if(ret.retry_after) {
+          this.setState({ verificationCodeRetry: Math.ceil(ret.retry_after) });
+          const timer = setInterval((function () {
+            this.setState(prevState => {
+              if(prevState.verificationCodeRetry <= 1) {
+                clearInterval(prevState.verificationCodeRetryTimer);
+                return { verificationCodeRetry: null };
+              }
+              return { verificationCodeRetry: prevState.verificationCodeRetry - 1 };
+            })
+          }).bind(this), 1000);
+          this.setState({ verificationCodeRetryTimer: timer });
+        }
+        setFormErrors(form, ret.errors);
+      });
+    }
+  };
+
+  register = data => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'session/register',
+      payload: data,
+    });
+  };
+
+  logIn = data => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'session/login',
+      payload: data,
+    }).then(ret => {
+      displayMessage(ret);
+      if(ret.result === 'success') {
+        this.handleHideModel();
+        setTimeout(() => dispatch({
+          type: 'session/fetch',
+        }), constants.modalAnimationDurationFade);
+      }
+      else if(ret.result === 'error') {
+        if(this.state.shakeTimer) {
+          clearTimeout(this.state.shakeTimer);
+        }
+        this.setState({ shake: true });
+        this.setState({ shakeTimer: setTimeout(() => this.setState({ shake: false }), constants.modalAnimationDurationShake) });
+      }
+    });
+  };
+
+  handleOk = () => {
+    this.props.form.validateFields((err, values) => {
+      if(!err) {
+        switch(this.state.tab) {
+          case 'login':
+            this.logIn(values);
+            break;
+          case 'register':
+            this.register(values);
+            break;
+          default:
+        }
+      }
+    });
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    this.handleOk();
+  };
+
   handleShowModel = e => {
     if(e) {
       e.stopPropagation();
@@ -291,27 +361,6 @@ class JoinModal extends React.Component {
 
   handleHideModel = () => {
     this.setState({ visible: false });
-  };
-
-  logIn = data => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'session/login',
-      payload: data,
-    });
-  };
-
-  handleOk = () => {
-    this.props.form.validateFields((err, values) => {
-      if(!err) {
-        this.logIn(values);
-      }
-    });
-  };
-
-  handleSubmit = e => {
-    e.preventDefault();
-    this.handleOk();
   };
 
   render() {
@@ -346,10 +395,8 @@ class JoinModal extends React.Component {
 }
 
 function mapStateToProps(state) {
-  const { login: loginResult } = state.session;
   return {
-    loading: state.loading.effects['session/login'],
-    loginResult,
+    loading: !!state.loading.effects['session/register'] || !!state.loading.effects['session/login'],
   };
 }
 
