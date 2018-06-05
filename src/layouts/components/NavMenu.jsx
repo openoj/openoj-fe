@@ -5,6 +5,7 @@ import Link from 'umi/link';
 import { Menu, Icon, Spin } from 'antd';
 import displayMessage from '../../utils/displayMessage';
 import constants from '../../configs/constants';
+import pages from '../../configs/pages';
 import JoinModal from './Session/JoinModal';
 import gStyles from '../../general.less';
 import styles from './ResponsiveNav.less';
@@ -29,8 +30,8 @@ class NavMenu extends React.Component {
         selectedKeys={[`${activeLinkKey}`]}
         className={className}
       >
-        <Menu.Item key="/problems">
-          <Link to="/problems" onClick={onLinkClick}>Problems</Link>
+        <Menu.Item key={pages.problem.index}>
+          <Link to={pages.problem.index} onClick={onLinkClick}>Problems</Link>
         </Menu.Item>
         <Menu.Item key="/statuses">
           <Link to="/statuses" onClick={onLinkClick}>Statuses</Link>

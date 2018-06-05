@@ -270,7 +270,7 @@ class JoinModal extends React.Component {
     if(this.state.verificationCodeRetry) {
       return;
     }
-    const { form, dispatch } = this.props;
+    const { dispatch, form } = this.props;
     form.validateFields(['email']);
     if(!form.getFieldError('email')) {
       dispatch({
@@ -297,10 +297,21 @@ class JoinModal extends React.Component {
   };
 
   register = data => {
-    const { dispatch } = this.props;
+    const { dispatch, form } = this.props;
     dispatch({
       type: 'session/register',
       payload: data,
+    }).then(ret => {
+      displayMessage(ret);
+      if(ret.result === 'success') {
+        this.handleHideModel();
+        setTimeout(() => dispatch({
+          type: 'session/fetch',
+        }), constants.modalAnimationDurationFade);
+      }
+      else if(ret.result === 'error') {
+        setFormErrors(form, ret.errors);
+      }
     });
   };
 
@@ -362,6 +373,10 @@ class JoinModal extends React.Component {
   handleHideModel = () => {
     this.setState({ visible: false });
   };
+
+  componentWillUnmount() {
+    clearTimeout(this.state.verificationCodeRetryTimer);
+  }
 
   render() {
     const { children, loading } = this.props;
