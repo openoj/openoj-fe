@@ -1,4 +1,4 @@
-import * as sessionService from '../services/session';
+import * as service from '../services/session';
 
 let initialState = {
   status: {
@@ -8,7 +8,6 @@ let initialState = {
 };
 
 export default {
-  namespace: 'session',
   state: initialState,
   reducers: {
     save(state, { payload: { item, ret } }) {
@@ -24,7 +23,7 @@ export default {
   },
   effects: {
     * fetch(action, { call, put }) {
-      const ret = yield call(sessionService.fetch);
+      const ret = yield call(service.fetch);
       yield put({
         type: 'save',
         payload: { item: 'status', ret },
@@ -35,14 +34,14 @@ export default {
       yield put({ type: 'fetch' });
     },
     * login({ payload: data }, { call, put }) {
-      let ret = yield call(sessionService.login, data);
+      let ret = yield call(service.login, data);
       if(ret.result === 'success') {
-        ret = yield call(sessionService.getAccessToken, ret.csrfmiddlewaretoken);
+        ret = yield call(service.getAccessToken, ret.csrfmiddlewaretoken);
       }
       return ret;
     },
     * logout(action, { call, put }) {
-      let ret = yield call(sessionService.logout);
+      let ret = yield call(service.logout);
       if(ret.result === 'success') {
         yield put({
           type: 'reset',
@@ -52,10 +51,10 @@ export default {
       return ret;
     },
     * getRegisterVerificationCode({ payload: data }, { call, put }) {
-      return yield call(sessionService.getRegisterVerificationCode, data);
+      return yield call(service.getRegisterVerificationCode, data);
     },
     * register({ payload: data }, { call, put }) {
-      return yield call(sessionService.register, data);
+      return yield call(service.register, data);
     },
   },
   subscriptions: {

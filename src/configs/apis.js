@@ -8,4 +8,7 @@ export default {
     logout: '/api/logout',
     oauth: '/api/o/authorize/',
   },
+  problem: {
+    index: '/api/problem/',
+  }
 };

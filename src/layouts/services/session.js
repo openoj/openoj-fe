@@ -13,7 +13,6 @@ export function login(data) {
   return post(apis.session.login, data);
 }
 
-
 export async function getAccessToken(csrf) {
   let checkOauthFrame = (frame, resolve) => {
     const hash = frame.contentWindow.location.hash;
