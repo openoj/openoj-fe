@@ -23,19 +23,17 @@ class NavMenu extends React.Component {
   };
 
   render() {
-    const { mobileVersion, activeLinkKey, onLinkClick, className, loading, statusData } = this.props;
+    const { mobileVersion, onLinkClick, className, loading, statusData } = this.props;
+    let { activeLinkKey } = this.props;
+    if(activeLinkKey.startsWith(pages.contest.index)) {
+      activeLinkKey = pages.contest.index;
+    }
     return (
       <Menu
         mode={mobileVersion ? 'vertical' : 'horizontal'}
         selectedKeys={[`${activeLinkKey}`]}
         className={className}
       >
-        <Menu.Item key={pages.problem.index}>
-          <Link to={pages.problem.index} onClick={onLinkClick}>Problems</Link>
-        </Menu.Item>
-        <Menu.Item key="/statuses">
-          <Link to="/statuses" onClick={onLinkClick}>Statuses</Link>
-        </Menu.Item>
         <Menu.Item key={pages.contest.index}>
           <Link to={pages.contest.index} onClick={onLinkClick}>Contests</Link>
         </Menu.Item>

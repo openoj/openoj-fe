@@ -1,23 +1,57 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Table, Pagination } from 'antd';
+import { Table, Pagination, Popover, Input, Icon } from 'antd';
 import router from 'umi/router';
 import Link from 'umi/link';
+import moment from 'moment';
+import classNames from 'classnames'
+import TimeStatusBadge from './components/TimeStatusBadge';
 import limits from '../../../configs/limits';
 import pages from '../../../configs/pages';
+import gStyles from '../../../general.less';
+import styles from './index.less';
 
 class ContestACMList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      filterDropdownVisible: false,
+      searchTitle: props.title,
+      filtered: !!props.title,
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.title !== this.props.title) {
+      this.setState({
+        searchTitle: nextProps.title,
+        filtered: !!nextProps.title,
+      });
+    }
+  }
+
   handleChangePage = page => {
-    const { dispatch, title } = this.props;
+    const { title } = this.props;
     router.push({
       pathname: pages.contest.index,
       query: { page, title },
     })
   };
 
-  handleChangeTable = (pagination, filters, sorter) => {
-    // console.log(pagination);
+  onInputChange = (e) => {
+    this.setState({ searchTitle: e.target.value });
+  };
 
+  onSearch = () => {
+    const { searchTitle } = this.state;
+    this.setState({
+      filterDropdownVisible: false,
+      filtered: !!searchTitle,
+    });
+    router.push({
+      pathname: pages.contest.index,
+      query: { page: 1, title: searchTitle },
+    });
   };
 
   render() {
@@ -29,25 +63,65 @@ class ContestACMList extends React.Component {
                loading={loading}
                onChange={this.handleChangeTable}
                pagination={false}
+               className={styles.responsiveTable}
         >
           <Table.Column
             title="Title"
-            dataIndex="title"
             key="title"
+            filterDropdown={(
+              <div className={styles.customFilterDropdown}>
+                <Input.Search
+                  ref={ele => this.searchInput = ele}
+                  placeholder=""
+                  enterButton="Search"
+                  value={this.state.searchTitle}
+                  onChange={this.onInputChange}
+                  onPressEnter={this.onSearch}
+                  onSearch={this.onSearch}
+                />
+              </div>
+            )}
+            filterIcon={(<Icon type="search" style={{ color: this.state.filtered ? '#108ee9' : '#aaa' }}/>)}
+            filterDropdownVisible={this.state.filterDropdownVisible}
+            onFilterDropdownVisibleChange={(visible) => {
+              this.setState({
+                filterDropdownVisible: visible,
+              }, () => this.searchInput && this.searchInput.focus());
+            }}
             render={(text, record) => (
               <Link to={`${pages.contest.index}/${record.id}`}>{record.title}</Link>
             )}
           />
           <Table.Column
-            title="Started at"
-            dataIndex="started_at"
-            key="started_at"
+            title="Time"
+            key="time"
+            render={(text, record) => (
+              <Popover content={(
+                <table>
+                  <tbody>
+                  <tr>
+                    <td className={classNames(gStyles.textRight, gStyles.textBold)}>Start:</td>
+                    <td>{moment(record.started_at).format('YYYY-MM-DD HH:mm:ss Z')} ({moment(record.started_at).fromNow()})</td>
+                  </tr>
+                  <tr>
+                    <td className={classNames(gStyles.textRight, gStyles.textBold)}>End:</td>
+                    <td>{moment(record.ended_at).format('YYYY-MM-DD HH:mm:ss Z')} ({moment(record.ended_at).fromNow()})</td>
+                  </tr>
+                  </tbody>
+                </table>
+              )}>
+                <span>{moment(record.started_at).format('YYYY-MM-DD HH:mm')} ~ {moment(record.ended_at).format('YYYY-MM-DD HH:mm')}</span>
+              </Popover>
+            )}
           />
           <Table.Column
-            title="Ended at"
-            dataIndex="ended_at"
-            key="ended_at"
-          />
+            title="Status"
+            key="status"
+            render={(text, record) => (
+              <TimeStatusBadge start={record.started_at} end={record.ended_at}/>
+            )}
+          >
+          </Table.Column>
         </Table>
         <Pagination
           className="ant-table-pagination"
