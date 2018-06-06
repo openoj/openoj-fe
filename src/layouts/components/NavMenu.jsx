@@ -36,6 +36,9 @@ class NavMenu extends React.Component {
         <Menu.Item key="/statuses">
           <Link to="/statuses" onClick={onLinkClick}>Statuses</Link>
         </Menu.Item>
+        <Menu.Item key={pages.contest.index}>
+          <Link to={pages.contest.index} onClick={onLinkClick}>Contests</Link>
+        </Menu.Item>
         {mobileVersion ?
           loading ?
             <Menu.Item key="loading">

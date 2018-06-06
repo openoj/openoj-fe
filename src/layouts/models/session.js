@@ -34,11 +34,7 @@ export default {
       yield put({ type: 'fetch' });
     },
     * login({ payload: data }, { call, put }) {
-      let ret = yield call(service.login, data);
-      if(ret.result === 'success') {
-        ret = yield call(service.getAccessToken, ret.csrfmiddlewaretoken);
-      }
-      return ret;
+      return yield call(service.login, data);
     },
     * logout(action, { call, put }) {
       let ret = yield call(service.logout);

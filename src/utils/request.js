@@ -1,6 +1,7 @@
 import axios from 'axios';
 import qs from 'qs';
 import constants from '../configs/constants';
+import apis from '../configs/apis';
 
 function checkStatus(response) {
   if(response.status >= 200 && response.status < 300) {
@@ -40,31 +41,46 @@ export function get(url, params) {
   });
 }
 
-export function post(url, data) {
+export function getCsrf() {
+  return request(apis.general.csrf);
+}
+
+export async function post(url, data) {
+  const csrf = await getCsrf();
+  return request(url, {
+    method: 'post',
+    data: qs.stringify({ ...data, csrfmiddlewaretoken: csrf.csrfmiddlewaretoken }),
+  });
+}
+
+export function postWithoutCsrf(url, data) {
   return request(url, {
     method: 'post',
     data: qs.stringify(data),
   });
 }
 
-export function put(url, data) {
+export async function put(url, data) {
+  const csrf = await getCsrf();
   return request(url, {
     method: 'put',
-    data: qs.stringify(data),
+    data: qs.stringify({ ...data, csrfmiddlewaretoken: csrf.csrfmiddlewaretoken }),
   });
 }
 
-export function patch(url, data) {
+export async function patch(url, data) {
+  const csrf = await getCsrf();
   return request(url, {
     method: 'patch',
-    data: qs.stringify(data),
+    data: qs.stringify({ ...data, csrfmiddlewaretoken: csrf.csrfmiddlewaretoken }),
   });
 }
 
-export function del(url, data) {
+export async function del(url, data) {
+  const csrf = await getCsrf();
   return request(url, {
     method: 'delete',
-    data: qs.stringify(data),
+    data: qs.stringify({ ...data, csrfmiddlewaretoken: csrf.csrfmiddlewaretoken }),
   });
 }
 

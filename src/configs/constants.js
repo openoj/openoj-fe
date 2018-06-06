@@ -1,5 +1,6 @@
 export default {
   siteName: 'OpenOJ',
+  accessTokenCookieName: 'access_token_openoj',
   requestTimeout: 5000,
   msgDuration: {
     success: 3,

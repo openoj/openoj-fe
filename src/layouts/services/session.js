@@ -35,7 +35,7 @@ export async function getAccessToken(csrf) {
       reject();
     }, constants.requestTimeout);
   }).then(({ accessToken, expires }) => {
-    cookie.set('access_token_openoj', accessToken, { expires: expires / 3600 / 24 });
+    cookie.set(constants.accessTokenCookieName, accessToken, { expires: expires / 3600 / 24 });
     ok = true;
   }).catch(err => {
   });
@@ -56,8 +56,12 @@ export async function getAccessToken(csrf) {
   }
 }
 
-export function logout() {
-  return get(apis.session.logout);
+export async function logout() {
+  const ret = await get(apis.session.logout);
+  if(ret.result === 'success') {
+    cookie.remove(constants.accessTokenCookieName);
+  }
+  return ret;
 }
 
 

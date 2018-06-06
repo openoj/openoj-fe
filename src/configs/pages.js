@@ -4,5 +4,8 @@ export default {
   },
   problem: {
     index: '/problem',
+  },
+  contest: {
+    index: '/contest/acm',
   }
 };

@@ -1,5 +1,5 @@
-import * as service from '../services/problem';
-import pages from '../../../configs/pages';
+import * as service from '../services/contest_acm';
+import pages from '../../../../configs/pages';
 
 let initialState = {
   list: {
@@ -9,8 +9,7 @@ let initialState = {
     title: null,
   },
   detail: {
-    source: null,
-    content: null,
+
   }
 };
 
@@ -38,15 +37,15 @@ export default {
       return ret;
     },
     * reloadList(action, { put, select }) {
-      const page = yield select(state => state.problem.page);
-      const title = yield select(state => state.problem.title);
+      const page = yield select(state => state.contest_acm.page);
+      const title = yield select(state => state.contest_acm.title);
       yield put({ type: 'fetch', payload: { page, title } });
     },
   },
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname, query }) => {
-        if(pathname === pages.problem.index) {
+        if(pathname === pages.contest.index) {
           dispatch({ type: 'getList', payload: query });
         }
       });

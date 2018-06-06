@@ -1,4 +1,7 @@
 export default {
+  general: {
+    csrf: '/api/csrf',
+  },
   session: {
     status: '/api/session',
     registerVerificationCode: '/api/register_email',
@@ -9,6 +12,11 @@ export default {
     oauth: '/api/o/authorize/',
   },
   problem: {
-    index: '/api/problem/',
-  }
+    index: '/api/set/1/',
+  },
+  contest: {
+    acm: {
+      index: '/api/set/',
+    }
+  },
 };
