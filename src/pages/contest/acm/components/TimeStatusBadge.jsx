@@ -1,8 +1,8 @@
 import { Badge } from 'antd';
 import getSetTimeStatus from "../../../../utils/getSetTimeStatus";
 
-export default ({ start, end }) => {
-  const status = getSetTimeStatus(start, end);
+export default ({ start, end, cur }) => {
+  const status = getSetTimeStatus(start, end, cur);
   return (
     status === 'Pending' ?
       <Badge status="processing" text={status}/>

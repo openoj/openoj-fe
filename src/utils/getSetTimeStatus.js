@@ -1,10 +1,10 @@
 import moment from 'moment';
 
-export default function(startTime, endTime) {
-  if(moment().isBefore(startTime)) {
+export default function(startTime, endTime, currentTime) {
+  if(moment(currentTime).isBefore(startTime)) {
     return 'Pending';
   }
-  else if(moment().isSame(endTime) || moment().isAfter(endTime)) {
+  else if(moment(currentTime).isSame(endTime) || moment(currentTime).isAfter(endTime)) {
     return 'Ended';
   }
   else {

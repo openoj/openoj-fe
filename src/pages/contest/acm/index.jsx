@@ -55,7 +55,7 @@ class ContestACMList extends React.Component {
   };
 
   render() {
-    const { data, loading, page, total } = this.props;
+    const { data, loading, page, total, serverTime } = this.props;
     return (
       <div>
         <Table dataSource={data}
@@ -101,11 +101,11 @@ class ContestACMList extends React.Component {
                   <tbody>
                   <tr>
                     <td className={classNames(gStyles.textRight, gStyles.textBold)}>Start:</td>
-                    <td>{moment(record.started_at).format('YYYY-MM-DD HH:mm:ss Z')} ({moment(record.started_at).fromNow()})</td>
+                    <td>{moment(record.started_at).format('YYYY-MM-DD HH:mm:ss Z')} ({moment(record.started_at).from(serverTime)})</td>
                   </tr>
                   <tr>
                     <td className={classNames(gStyles.textRight, gStyles.textBold)}>End:</td>
-                    <td>{moment(record.ended_at).format('YYYY-MM-DD HH:mm:ss Z')} ({moment(record.ended_at).fromNow()})</td>
+                    <td>{moment(record.ended_at).format('YYYY-MM-DD HH:mm:ss Z')} ({moment(record.ended_at).from(serverTime)})</td>
                   </tr>
                   </tbody>
                 </table>
@@ -118,7 +118,7 @@ class ContestACMList extends React.Component {
             title="Status"
             key="status"
             render={(text, record) => (
-              <TimeStatusBadge start={record.started_at} end={record.ended_at}/>
+              <TimeStatusBadge start={record.started_at} end={record.ended_at} cur={serverTime}/>
             )}
           >
           </Table.Column>
@@ -137,12 +137,14 @@ class ContestACMList extends React.Component {
 
 function mapStateToProps(state) {
   const { data, page, total, title } = state.contest_acm.list;
+  const serverTime = state.contest_acm.serverTime;
   return {
     loading: !!state.loading.effects['contest_acm/getList'] || !!state.loading.effects['contest_acm/reloadList'],
     data,
     page,
     total,
     title,
+    serverTime,
   };
 }
 

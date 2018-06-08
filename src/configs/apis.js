@@ -13,10 +13,14 @@ export default {
   },
   problem: {
     index: '/api/set/1/',
+    detail: '/api/problem/',
   },
   contest: {
     acm: {
       index: '/api/set/',
+      problem: '/api/set_problem/',
+      submit: '/api/submit',
+      status: '',
     }
   },
 };

@@ -17,11 +17,12 @@ function checkStatus(response) {
  * Requests a URL, returning a promise.
  * Powered by dva/examples
  *
- * @param  {string} url       The URL we want to request
- * @param  {object} [options] The options we want to pass to "fetch"
- * @return {object}           An object containing either "data" or "err"
+ * @param  {string}  url                The URL we want to request
+ * @param  {object}  [options]          The options we want to pass to "fetch"
+ * @param  {boolean} [requireResponse]  Whether require response data
+ * @return {object}                     An object containing either "data" or "err"
  */
-async function request(url, options) {
+async function request(url, options, requireResponse = false) {
   const response = await axios({
     url,
     timeout: constants.requestTimeout,
@@ -32,6 +33,9 @@ async function request(url, options) {
     ...options,
   });
   checkStatus(response);
+  if(requireResponse) {
+    return await response;
+  }
   return await response.data;
 }
 
@@ -39,6 +43,12 @@ export function get(url, params) {
   return request(url, {
     params,
   });
+}
+
+export function getResponse(url, params) {
+  return request(url, {
+    params,
+  }, true);
 }
 
 export function getCsrf() {

@@ -1,4 +1,4 @@
-import { get } from '../../../../utils/request';
+import { get, getResponse, post } from '../../../../utils/request';
 import apis from '../../../../configs/apis';
 import limits from '../../../../configs/limits';
 import convertLikeQuery from '../../../../utils/convertLikeQuery';
@@ -16,15 +16,27 @@ export async function getList(query) {
     type: 'acm_contest',
     ...query,
   };
-  let ret = await get(apis.contest.acm.index, params);
+  let resp = await getResponse(apis.contest.acm.index, params);
+  let ret = resp.data;
   return {
-    data: ret.results,
-    page: parseInt(originalQuery.page, 10),
-    total: ret.count,
-    title: originalQuery.title,
+    ...resp,
+    data: {
+      data: ret.results,
+      page: parseInt(originalQuery.page, 10),
+      total: ret.count,
+      title: originalQuery.title,
+    }
   };
 }
 
 export function getDetail(id) {
-  return get(`${apis.contest.acm.index}id/`);
+  return getResponse(`${apis.contest.acm.index}${id}/`);
+}
+
+export function getProblem(id) {
+  return get(`${apis.contest.acm.problem}${id}/`);
+}
+
+export function submit(data) {
+  return post(apis.contest.acm.submit, data);
 }
